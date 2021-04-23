@@ -2,56 +2,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using API.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace API
 {
     public class Startup
     {
         private readonly IConfiguration _config;
-       
-        public Startup(IConfiguration config)
+
+        public Startup(IConfiguration configuration)
         {
-            _config = config;
+            _config = configuration;
         }
 
-        
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services){
+
             services.AddDbContext<DataContext>(options =>{
-              options.UseSqlite(_config.GetConnectionString("DefaultConnection"));  
+                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
             services.AddCors();
-            
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-               
             }
 
             app.UseHttpsRedirection();
 
             app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
-            //Basicamente esta linea nos dice que si viene de esta direccion http://localhost:4200/, nos va a permitir cualquier cabecera
-            //Middleware son mediadores que resuelven cositas, por ejemplo seguraridad eccetera
-            //Cuando se utiliza cors, esto permitira que las peticiones que vienen del navegador entren al servidor
 
             app.UseRouting();
 
